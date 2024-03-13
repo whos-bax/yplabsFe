@@ -1,25 +1,13 @@
 import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, Touchable, TouchableOpacity, View } from "react-native"
-import { MemoProps } from "../../App";
+import { MemoProps } from "../pages/TodoListStack";
+import { useNavigationContainerRef } from "@react-navigation/native";
 
 type ItemProps = {
     content: string
     create_at: string
 };
 
-const Item = ({ content }: ItemProps) => (
-    <TouchableOpacity style={styles.item}>
-        <Text
-            style={styles.content}
-            numberOfLines={5}
-            ellipsizeMode="tail"
-        >
-            {content.replaceAll("\n", "")}
-        </Text>
-    </TouchableOpacity>
-);
-
-const TodoListScreen = ({ memoList }: MemoProps) => {
-    console.log(memoList)
+const TodoList = ({ memoList }: MemoProps) => {
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Todo-List</Text>
@@ -31,6 +19,28 @@ const TodoListScreen = ({ memoList }: MemoProps) => {
         </SafeAreaView>
     )
 }
+
+const Item = ({ content }: ItemProps) => {
+    const navigationRef = useNavigationContainerRef();
+    const handleNavigate = () => {
+        // navigationRef.navigate("Detail")
+        console.log(navigationRef.current)
+    }
+    return (
+        <TouchableOpacity
+            style={styles.item}
+            onPress={handleNavigate}
+        >
+            <Text
+                style={styles.content}
+                numberOfLines={5}
+                ellipsizeMode="tail"
+            >
+                {content.replaceAll("\n", "")}
+            </Text>
+        </TouchableOpacity>
+    )
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -54,4 +64,4 @@ const styles = StyleSheet.create({
         flex: 1,
     }
 })
-export default TodoListScreen
+export default TodoList
