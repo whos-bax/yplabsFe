@@ -28,10 +28,7 @@ const TodoModal = ({todoValue, handleTodoListCreate}: TodoModalProps) => {
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
-        <Pressable
-          style={styles.centeredView}
-          // onPress={handleModalClose}
-        >
+        <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <TextInput
               style={styles.modalInput}
@@ -45,19 +42,17 @@ const TodoModal = ({todoValue, handleTodoListCreate}: TodoModalProps) => {
             <View style={styles.buttonGroup}>
               <TouchableOpacity
                 style={styles.button}
-                // hitSlop={10}
                 onPress={handleModalClose}>
                 <Text style={styles.buttonText}>취소</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.buttonActive]}
-                // hitSlop={10}
                 onPress={handleModalClose}>
                 <Text style={styles.buttonText}>작성</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </Pressable>
+        </View>
       </Modal>
       <Pressable
         style={styles.fixedButton}
@@ -72,7 +67,6 @@ const styles = StyleSheet.create({
     paddingTop: 22,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    // marginTop: 22,
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
   modalView: {
@@ -80,7 +74,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 20,
     marginTop: height * 0.1,
-    // alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -95,7 +88,7 @@ const styles = StyleSheet.create({
   modalInput: {
     textAlign: 'left',
     fontSize: 16,
-    maxHeight: 150,
+    height: 150,
   },
   buttonGroup: {
     flexDirection: 'row',

@@ -9,8 +9,12 @@ import {
 import {MemoProps} from '../pages/TodoListScreen.tsx';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
+// import {useAppDispatch} from '../redux/store.ts';
+import todoDetailSlice from '../redux/slice/todoDetailSlice.ts';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/rootReducer.ts';
+import commonSlice from '../redux/slice/commonSlice.ts';
 import {useAppDispatch} from '../redux/store.ts';
-import todoSlice from '../redux/slice/todo.ts';
 
 export type ItemProps = {
   id: number | null;
@@ -19,24 +23,39 @@ export type ItemProps = {
   update_at: string;
 };
 
-const TodoList = ({memoList}: MemoProps): React.JSX.Element => {
-  const [refreshing, setRefreshing] = useState(false);
+const TodoList = ({memoList, getMemoList}: MemoProps): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const isLoading = useSelector((state: RootState) => state.common.loading);
+  console.log('isLoadingisLoading', isLoading);
+
   const onRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
+    getMemoList();
+  };
+
+  const handleTest = () => {
+    dispatch(commonSlice.actions.setTodoDetail(false));
   };
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Todo-List</Text>
       <FlatList
+        contentContainerStyle={styles.listView}
         data={memoList}
         keyExtractor={item => `${item.id}`}
         renderItem={({item}) => <Item {...item} />}
         onRefresh={onRefresh}
-        refreshing={refreshing}
+        refreshing={isLoading || false}
       />
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          top: 20,
+          left: 20,
+          width: 50,
+          height: 50,
+          backgroundColor: 'black',
+        }}
+        onPress={handleTest}></TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -45,7 +64,7 @@ const Item = (item: ItemProps): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<RootStackNavigationProp>();
   const handleNavigate = () => {
-    dispatch(todoSlice.actions.setTodoDetail(item));
+    dispatch(todoDetailSlice.actions.setTodoDetail(item));
     navigation.navigate('Detail');
   };
   return (
@@ -67,6 +86,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     marginVertical: 16,
+  },
+  listView: {
+    paddingBottom: 20,
   },
   item: {
     backgroundColor: '#f1f3f5',

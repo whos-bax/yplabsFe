@@ -7,14 +7,10 @@ const initialState = {
   update_at: '',
 };
 
-/**
- * TemplateSlice에서 관리할 상태를 지정합니다.
- */
-export const todoSlice = createSlice({
+const todoDetailSlice = createSlice({
   name: 'todoDetail',
   initialState,
   reducers: {
-    // 모든 사용자 정보를 상태에 저장합니다.
     setTodoDetail(state, action) {
       state.id = action.payload.id;
       state.content = action.payload.content;
@@ -24,7 +20,4 @@ export const todoSlice = createSlice({
   },
 });
 
-// Action creators are generated for each case reducer function
-// export const {setTodoDetail} = todoSlice.actions;
-
-export default todoSlice;
+export default todoDetailSlice;
