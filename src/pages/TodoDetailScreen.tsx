@@ -9,7 +9,7 @@ import api from '../api/apiService.ts';
 import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
 import {useAppDispatch} from '../redux/store.ts';
 import todoListSlice from '../redux/slice/todoListSlice.ts';
-import {getData, storeData} from '../hook/asyncStorage.ts';
+import {getData, removeData, storeData} from '../hook/asyncStorage.ts';
 
 export type TodoDetailPropsType = {
   item: ItemType;
@@ -32,9 +32,13 @@ const TodoDetailScreen = (): React.JSX.Element => {
       setTodoValue(detail.content);
 
       getData('id-list').then(res => {
-        let list = JSON.parse(res);
-        if (!list.includes(detail.id)) {
-          setTodoDetail({...detail, is_finished: true});
+        if (res) {
+          let list = JSON.parse(res);
+          if (!list.includes(detail.id)) {
+            setTodoDetail({...detail, is_finished: true});
+          } else {
+            setTodoDetail({...detail, is_finished: false});
+          }
         } else {
           setTodoDetail({...detail, is_finished: false});
         }
@@ -83,13 +87,10 @@ const TodoDetailScreen = (): React.JSX.Element => {
 
     item.is_finished = value;
     list.splice(idx, 1, item);
-    console.log(detail.id);
     dispatch(todoDetailSlice.actions.setTodoDetail(item));
     dispatch(todoListSlice.actions.setList(list));
     storeIdList(detail.id, value);
   };
-
-  console.log(todoDetail);
 
   /**
    * 완료 리스트 id asyncStorage 저장
@@ -98,20 +99,25 @@ const TodoDetailScreen = (): React.JSX.Element => {
    */
   const storeIdList = async (id: number, value: boolean) => {
     let idList =
-      (await getData('id-list')) !== null ? await getData('id-list') : [];
-    idList = JSON.parse(idList);
+      (await getData('id-list')) !== null
+        ? JSON.parse(await getData('id-list'))
+        : [];
     if (value) {
-      idList.push(id);
-      await storeData('id-list', JSON.stringify(idList));
+      if (!idList.includes(id)) {
+        idList.push(id);
+        await storeData('id-list', JSON.stringify(idList));
+      }
     } else {
-      let idx = idList.findIndex((todo: ItemType) => todo.id === id);
-      idList.splice(idx, 1);
-      await storeData('id-list', JSON.stringify(idList));
+      if (idList.includes(id)) {
+        let idx = idList.findIndex((todo: ItemType) => todo.id === id);
+        idList.splice(idx, 1);
+        await storeData('id-list', JSON.stringify(idList));
+      }
     }
   };
 
   const detailProps = {
-    item: todoDetail,
+    item: detail,
     handleToggleSwitch,
   };
 

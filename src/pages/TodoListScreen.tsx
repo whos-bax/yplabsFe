@@ -13,6 +13,7 @@ import {RootState} from '../redux/rootReducer.ts';
 import todoListSlice from '../redux/slice/todoListSlice.ts';
 import api from '../api/apiService.ts';
 import {useIsFocused} from '@react-navigation/native';
+import {getData} from '../hook/asyncStorage.ts';
 
 export type TodoListPropsType = {
   memoList: ItemType[];
@@ -55,13 +56,20 @@ function TodoListScreen(): React.JSX.Element {
     dispatch(commonSlice.actions.setIsLoading(true));
     const res = await api.getTodoAll();
     const timer = setTimeout(() => {
-      let list = res.sort((a: ItemType, b: ItemType) => b.id - a.id);
-      setTotalList(list);
-      setTotalSize(list.length);
-      setMemoList(list.slice(0, pageSize));
-      dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
-      dispatch(commonSlice.actions.setIsLoading(false));
-      setRefreshing(false);
+      // async storage 데이터로 완료 표기 추가
+      getData('id-list').then(result => {
+        let idList: number[] = [];
+        if (result) {
+          idList = JSON.parse(result);
+        }
+        let list = res.sort((a: ItemType, b: ItemType) => b.id - a.id);
+        setTotalList(list);
+        setTotalSize(list.length);
+        setMemoList(list.slice(0, pageSize));
+        dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
+        dispatch(commonSlice.actions.setIsLoading(false));
+        setRefreshing(false);
+      });
     }, 300);
     return () => clearTimeout(timer);
   };
@@ -72,13 +80,27 @@ function TodoListScreen(): React.JSX.Element {
    */
   const getMemoList = () => {
     const timer = setTimeout(() => {
-      dispatch(commonSlice.actions.setIsLoading(true));
-      setMemoList(totalList.slice(0, pageSize * currPage));
-      dispatch(
-        todoListSlice.actions.setList(totalList.slice(0, pageSize * currPage)),
-      );
-      dispatch(commonSlice.actions.setIsLoading(false));
-      setRefreshing(false);
+      getData('id-list').then(res => {
+        dispatch(commonSlice.actions.setIsLoading(true));
+        let idList: number[] = [];
+        if (res) {
+          idList = JSON.parse(res);
+        }
+        let list = totalList.map((item: ItemType) => {
+          if (idList.includes(item.id)) {
+            return {
+              ...item,
+              is_finished: true,
+            };
+          } else {
+            return item;
+          }
+        });
+        setMemoList(list);
+        dispatch(todoListSlice.actions.setList(list));
+        dispatch(commonSlice.actions.setIsLoading(false));
+        setRefreshing(false);
+      });
     }, 300);
     return () => clearTimeout(timer);
   };
