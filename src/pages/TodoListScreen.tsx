@@ -110,10 +110,6 @@ function TodoListScreen(): React.JSX.Element {
           is_finished: idList.includes(item.id),
         };
       });
-      console.log(
-        idList.map(item => item),
-        list.map(item => [item.id, item.is_finished]),
-      );
       setMemoList(list);
       dispatch(todoListSlice.actions.setList(list));
       dispatch(commonSlice.actions.setIsLoading(false));
@@ -202,7 +198,6 @@ function TodoListScreen(): React.JSX.Element {
         }
       }
     }
-    console.log(id, value, idList);
   };
 
   /**
