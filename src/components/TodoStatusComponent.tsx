@@ -18,6 +18,7 @@ export type TodoStatusType = {
     handleTodoUpdate: (item: ItemType, handleModalVisible: () => void) => void;
     handleTodoDelete: (item: ItemType, handleModalVisible: () => void) => void;
   };
+  handleListToggle?: (value: boolean, item: ItemType) => void;
 };
 
 const TodoStatusComponent = ({

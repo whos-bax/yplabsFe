@@ -5,7 +5,7 @@ import {Alert, SafeAreaView, StyleSheet} from 'react-native';
 import TodoList from '../components/TodoList';
 import TodoModal from './../components/TodoModal';
 import {useAppDispatch} from '../redux/store.ts';
-import {ItemType} from '../redux/slice/todoDetailSlice.ts';
+import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
 import commonSlice from '../redux/slice/commonSlice.ts';
 import LoadingComponent from '../components/LoadingComponent.tsx';
 import {useSelector} from 'react-redux';
@@ -13,13 +13,14 @@ import {RootState} from '../redux/rootReducer.ts';
 import todoListSlice from '../redux/slice/todoListSlice.ts';
 import api from '../api/apiService.ts';
 import {useIsFocused} from '@react-navigation/native';
-import {getData} from '../hook/asyncStorage.ts';
+import {getData, storeData} from '../hook/asyncStorage.ts';
 
 export type TodoListPropsType = {
   memoList: ItemType[];
   refreshing: boolean;
   onRefresh: () => void;
   onEndReached: () => void;
+  handleListToggle: (value: boolean, item: ItemType) => void;
   todoStatusProps: {
     handleTodoUpdate: (item: ItemType, handleModalVisible: () => void) => void;
     handleTodoDelete: (item: ItemType, handleModalVisible: () => void) => void;
@@ -39,6 +40,8 @@ function TodoListScreen(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const isFocused = useIsFocused();
   const isLoading = useSelector((state: RootState) => state.common.loading);
+
+  const todoList = useSelector((state: RootState) => state.todoList.list);
   const detail = useSelector((state: RootState) => state.todoDetail);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -62,32 +65,14 @@ function TodoListScreen(): React.JSX.Element {
   const getMemoListAll = async () => {
     dispatch(commonSlice.actions.setIsLoading(true));
     const res = await api.getTodoAll();
-    const timer = setTimeout(() => {
-      let list = res.sort((a: ItemType, b: ItemType) => b.id - a.id);
-      setTotalList(list);
-      setTotalSize(list.length);
-      setMemoList(list.slice(0, pageSize));
-      dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
-      dispatch(commonSlice.actions.setIsLoading(false));
-      setRefreshing(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  };
-
-  /**
-   * 전체 메모 slice by pageSize
-   * totalList.slice(0, pageSize)
-   */
-  const getMemoList = () => {
-    const timer = setTimeout(() => {
-      // async storage 완료 데이터 적용
-      getData('id-list').then(res => {
-        dispatch(commonSlice.actions.setIsLoading(true));
-        let idList: number[] = [];
-        if (res) {
-          idList = JSON.parse(res);
-        }
-        let list = totalList.map((item: ItemType) => {
+    // async storage 완료 데이터 적용
+    getData('id-list').then(result => {
+      let idList: number[] = [];
+      if (result) {
+        idList = JSON.parse(result);
+      }
+      let list = res
+        .map((item: ItemType) => {
           if (idList.includes(item.id)) {
             return {
               ...item,
@@ -96,14 +81,44 @@ function TodoListScreen(): React.JSX.Element {
           } else {
             return item;
           }
-        });
-        setMemoList(list);
-        dispatch(todoListSlice.actions.setList(list));
-        dispatch(commonSlice.actions.setIsLoading(false));
-        setRefreshing(false);
+        })
+        .sort((a: ItemType, b: ItemType) => b.id - a.id);
+      setTotalList(list);
+      setTotalSize(list.length);
+      setMemoList(list.slice(0, pageSize));
+      dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
+      // dispatch(commonSlice.actions.setIsLoading(false));
+      setRefreshing(false);
+    });
+  };
+
+  /**
+   * 전체 메모 slice by pageSize
+   * totalList.slice(0, pageSize)
+   */
+  const getMemoList = () => {
+    // async storage 완료 데이터 적용
+    getData('id-list').then(result => {
+      dispatch(commonSlice.actions.setIsLoading(true));
+      let idList: number[] = [];
+      if (result) {
+        idList = JSON.parse(result);
+      }
+      let list = totalList.map((item: ItemType) => {
+        return {
+          ...item,
+          is_finished: idList.includes(item.id),
+        };
       });
-    }, 300);
-    return () => clearTimeout(timer);
+      console.log(
+        idList.map(item => item),
+        list.map(item => [item.id, item.is_finished]),
+      );
+      setMemoList(list);
+      dispatch(todoListSlice.actions.setList(list));
+      dispatch(commonSlice.actions.setIsLoading(false));
+      setRefreshing(false);
+    });
   };
 
   /**
@@ -141,6 +156,54 @@ function TodoListScreen(): React.JSX.Element {
   useEffect(() => {
     getMemoList();
   }, [totalList, isFocused, currPage]);
+
+  /**
+   * 토글 스위치 수정 (완료|미완료) for list
+   * @param value
+   * @param item
+   */
+  const handleListToggle = (value: boolean, item: ItemType) => {
+    let list = [...todoList];
+    let idx = list.findIndex((todo: ItemType) => todo.id === item.id);
+
+    item.is_finished = value;
+    list.splice(idx, 1, item);
+    dispatch(todoDetailSlice.actions.setTodoDetail(item));
+    dispatch(todoListSlice.actions.setList(list));
+    storeIdList(item.id, value);
+  };
+
+  /**
+   * 완료 리스트 id asyncStorage 저장
+   * @param id
+   * @param value
+   */
+  const storeIdList = async (id: number, value: boolean) => {
+    let idList =
+      (await getData('id-list')) !== null
+        ? JSON.parse(await getData('id-list'))
+        : [];
+    if (value) {
+      if (!idList.includes(id)) {
+        idList.push(id);
+        storeData('id-list', JSON.stringify(idList)).then(() => {
+          getMemoList();
+        });
+      }
+    } else {
+      if (idList.includes(id)) {
+        let idx = idList.findIndex((todoId: number) => todoId === id);
+        if (idx >= 0) {
+          // idList.splice(idx, 1);
+          let arr = idList.filter((v: number, i: number) => i !== idx);
+          storeData('id-list', JSON.stringify(arr)).then(() => {
+            getMemoList();
+          });
+        }
+      }
+    }
+    console.log(id, value, idList);
+  };
 
   /**
    * 할일 작성/수정
@@ -242,6 +305,7 @@ function TodoListScreen(): React.JSX.Element {
     refreshing,
     onRefresh,
     onEndReached,
+    handleListToggle,
     todoStatusProps,
   };
 

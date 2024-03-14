@@ -27,8 +27,8 @@ const TodoDetailScreen = (): React.JSX.Element => {
   const isLoading = useSelector((state: RootState) => state.common.loading);
   const dispatch = useAppDispatch();
 
-  const detail = useSelector((state: RootState) => state.todoDetail);
   const todoList = useSelector((state: RootState) => state.todoList.list);
+  const detail = useSelector((state: RootState) => state.todoDetail);
 
   const [todoValue, setTodoValue] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -114,22 +114,28 @@ const TodoDetailScreen = (): React.JSX.Element => {
    * @param value
    */
   const storeIdList = async (id: number, value: boolean) => {
-    let idList =
-      (await getData('id-list')) !== null
-        ? JSON.parse(await getData('id-list'))
-        : [];
-    if (value) {
-      if (!idList.includes(id)) {
-        idList.push(id);
-        await storeData('id-list', JSON.stringify(idList));
+    // async storage 완료 데이터 적용
+    getData('id-list').then(async result => {
+      let idList: number[] = [];
+      if (result) {
+        idList = JSON.parse(result);
       }
-    } else {
-      if (idList.includes(id)) {
-        let idx = idList.findIndex((todo: ItemType) => todo.id === id);
-        idList.splice(idx, 1);
-        await storeData('id-list', JSON.stringify(idList));
+      if (value) {
+        if (!idList.includes(id)) {
+          idList.push(id);
+          await storeData('id-list', JSON.stringify(idList));
+        }
+      } else {
+        if (idList.includes(id)) {
+          let idx = idList.findIndex((todoId: number) => todoId === id);
+          if (idx >= 0) {
+            // idList.splice(idx, 1);
+            let arr = idList.filter((v: number, i: number) => i !== idx);
+            await storeData('id-list', JSON.stringify(arr));
+          }
+        }
       }
-    }
+    });
   };
 
   /**

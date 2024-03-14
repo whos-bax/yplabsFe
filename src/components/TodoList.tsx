@@ -1,17 +1,16 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
-  Alert,
   FlatList,
-  Pressable,
   SafeAreaView,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
 } from 'react-native';
 import {TodoListPropsType} from '../pages/TodoListScreen.tsx';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
-import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
+import todoDetailSlice from '../redux/slice/todoDetailSlice.ts';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/rootReducer.ts';
 import {useAppDispatch} from '../redux/store.ts';
@@ -22,10 +21,9 @@ const TodoList = ({
   refreshing,
   onRefresh,
   onEndReached,
+  handleListToggle,
   todoStatusProps,
 }: TodoListPropsType): React.JSX.Element => {
-  const isLoading = useSelector((state: RootState) => state.common.loading);
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Todo-List</Text>
@@ -34,7 +32,11 @@ const TodoList = ({
         data={memoList}
         keyExtractor={item => `${item.id}`}
         renderItem={({item}) => (
-          <Item item={item} todoStatusProps={todoStatusProps} />
+          <Item
+            item={item}
+            todoStatusProps={todoStatusProps}
+            handleListToggle={handleListToggle}
+          />
         )}
         onRefresh={onRefresh}
         refreshing={refreshing}
@@ -44,15 +46,32 @@ const TodoList = ({
   );
 };
 
-const Item = ({item, todoStatusProps}: TodoStatusType): React.JSX.Element => {
+const Item = ({
+  item,
+  todoStatusProps,
+  handleListToggle,
+}: TodoStatusType): React.JSX.Element => {
+  const isLoading = useSelector((state: RootState) => state.common.loading);
   const dispatch = useAppDispatch();
   const navigation = useNavigation<RootStackNavigationProp>();
   const handleNavigate = () => {
     dispatch(todoDetailSlice.actions.setTodoDetail(item));
     navigation.navigate('Detail');
   };
+
   return (
     <TouchableOpacity style={styles.item} onPress={handleNavigate}>
+      <Switch
+        trackColor={{false: '#f1f3f5', true: '#3d67fc'}}
+        thumbColor={'white'}
+        onValueChange={(value: boolean) => {
+          if (handleListToggle) {
+            handleListToggle(value, item);
+          }
+        }}
+        value={item.is_finished}
+        disabled={isLoading}
+      />
       <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">
         {item.content}
       </Text>
@@ -76,8 +95,12 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   item: {
+    flexDirection: 'row',
+    gap: 8,
     backgroundColor: '#f1f3f5',
-    padding: 20,
+    paddingVertical: 20,
+    paddingLeft: 20,
+    paddingRight: 40,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 8,
