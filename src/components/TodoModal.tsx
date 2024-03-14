@@ -52,7 +52,7 @@ const TodoModal = ({
               <TouchableOpacity
                 style={[styles.button, styles.buttonActive]}
                 onPress={submitTodo}>
-                <Text style={styles.buttonText}>작성</Text>
+                <Text style={styles.buttonText}>완료</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -115,15 +115,15 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 16,
   },
   fixedButton: {
-    width: 40,
-    height: 40,
+    width: 46,
+    height: 46,
     borderRadius: 25,
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 16,
+    right: 16,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

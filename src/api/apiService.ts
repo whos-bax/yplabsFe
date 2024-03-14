@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {Alert} from 'react-native';
 const baseUrl = `http://3.35.194.197:8000`;
 
 export type TodoType = {
@@ -6,42 +7,87 @@ export type TodoType = {
   content?: string;
 };
 
+/**
+ * read
+ * success: 200
+ */
 async function getTodoAll() {
   try {
     const response = await axios.get(`${baseUrl}/todo/`);
     if (response.status === 200) {
       return response.data;
+    } else {
+      Alert.alert('잠시 후 다시 시도해 주세요.');
     }
   } catch (error) {
     console.error(error);
+    Alert.alert('잠시 후 다시 시도해 주세요.');
   }
 }
 
+/**
+ * create
+ * success: 201
+ * @param param
+ * @param param.content
+ */
 async function createTodo(param: TodoType) {
   try {
     const response = await axios.post(`${baseUrl}/todo/`, param);
     if (response.status === 201) {
       return response.data;
+    } else {
+      Alert.alert('잠시 후 다시 시도해 주세요.');
     }
   } catch (error) {
     console.error(error);
+    Alert.alert('잠시 후 다시 시도해 주세요.');
   }
 }
 
+/**
+ * delete
+ * success: 204
+ * @param param.id
+ */
 async function deleteTodo(param: TodoType) {
   try {
-    const response = await axios.delete(`${baseUrl}/todo/${param.id}`);
-    console.log(response, response.status);
-    if (response.status === 201) {
+    const response = await axios.delete(`${baseUrl}/todo/${param.id}/`);
+    if (response.status === 204) {
       return response.data;
+    } else {
+      Alert.alert('잠시 후 다시 시도해 주세요.');
     }
   } catch (error) {
     console.error(error);
+    Alert.alert('잠시 후 다시 시도해 주세요.');
   }
 }
 
+/**
+ * update
+ * success: 200
+ * @param param
+ * @param param.id
+ * @param param.content
+ */
+async function updateTodo(param: TodoType) {
+  try {
+    const response = await axios.patch(`${baseUrl}/todo/${param.id}/`, param);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      Alert.alert('잠시 후 다시 시도해 주세요.');
+    }
+  } catch (error) {
+    console.error(error);
+    Alert.alert('잠시 후 다시 시도해 주세요.');
+  }
+}
 const api = {
   getTodoAll,
   createTodo,
+  deleteTodo,
+  updateTodo,
 };
 export default api;

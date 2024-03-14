@@ -7,6 +7,7 @@ import TodoStatusComponent from './TodoStatusComponent.tsx';
 const TodoDetail = ({
   item,
   handleToggleSwitch,
+  todoStatusProps,
 }: TodoDetailPropsType): React.JSX.Element => {
   return (
     <ScrollView style={styles.container}>
@@ -17,19 +18,18 @@ const TodoDetail = ({
               styles.todoToggleText,
               item.is_finished && styles.todoToggleTextActive,
             ]}>
-            {item.is_finished ? '완료' : '대기'}
+            {item.is_finished ? '완료' : '미완료'}
           </Text>
           <Switch
             trackColor={{false: '#f1f3f5', true: '#3d67fc'}}
             thumbColor={'white'}
             onValueChange={handleToggleSwitch}
-            // onChange={handleToggleSwitch}
             value={item.is_finished || false}
           />
         </View>
         <View>
           <Text style={styles.content}>{item.content}</Text>
-          <TodoStatusComponent />
+          <TodoStatusComponent item={item} todoStatusProps={todoStatusProps} />
         </View>
 
         <View style={styles.dateView}>

@@ -1,6 +1,4 @@
 import {
-  Alert,
-  Button,
   Modal,
   Pressable,
   StyleSheet,
@@ -9,15 +7,31 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
+import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
+import {useAppDispatch} from '../redux/store.ts';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/rootReducer.ts';
 
 export type TodoStatusType = {
-  handleTodoDelete: () => void;
+  item: ItemType;
+  todoStatusProps: {
+    handleTodoUpdate: (item: ItemType, handleModalVisible: () => void) => void;
+    handleTodoDelete: (item: ItemType, handleModalVisible: () => void) => void;
+  };
 };
-const TodoStatusComponent = () => {
+
+const TodoStatusComponent = ({
+  item,
+  todoStatusProps,
+}: TodoStatusType): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const detail = useSelector((state: RootState) => state.todoDetail);
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleModalVisible = () => {
     setModalVisible(!modalVisible);
+    dispatch(todoDetailSlice.actions.setTodoDetail(item));
   };
   return (
     <View style={styles.statusChoiceView}>
@@ -36,13 +50,20 @@ const TodoStatusComponent = () => {
         }}>
         <Pressable style={styles.centeredView} onPress={handleModalVisible}>
           <View style={styles.modalView}>
-            <TouchableOpacity style={styles.modalButton}>
-              <Text>수정</Text>
-            </TouchableOpacity>
+            {!detail.is_finished && (
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() =>
+                  todoStatusProps.handleTodoUpdate(item, handleModalVisible)
+                }>
+                <Text>수정</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.modalButton}
-              // onPress={handleTodoDelete}
-            >
+              onPress={() =>
+                todoStatusProps.handleTodoDelete(item, handleModalVisible)
+              }>
               <Text>삭제</Text>
             </TouchableOpacity>
           </View>

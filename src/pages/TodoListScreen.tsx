@@ -20,6 +20,10 @@ export type TodoListPropsType = {
   refreshing: boolean;
   onRefresh: () => void;
   onEndReached: () => void;
+  todoStatusProps: {
+    handleTodoUpdate: (item: ItemType, handleModalVisible: () => void) => void;
+    handleTodoDelete: (item: ItemType, handleModalVisible: () => void) => void;
+  };
 };
 
 export type TodoModalPropsType = {
@@ -35,6 +39,7 @@ function TodoListScreen(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const isFocused = useIsFocused();
   const isLoading = useSelector((state: RootState) => state.common.loading);
+  const detail = useSelector((state: RootState) => state.todoDetail);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -49,6 +54,8 @@ function TodoListScreen(): React.JSX.Element {
   const [todoValue, setTodoValue] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [isEdit, setIsEdit] = useState(false);
+
   /**
    * 전체 메모 가져오기
    */
@@ -56,20 +63,13 @@ function TodoListScreen(): React.JSX.Element {
     dispatch(commonSlice.actions.setIsLoading(true));
     const res = await api.getTodoAll();
     const timer = setTimeout(() => {
-      // async storage 데이터로 완료 표기 추가
-      getData('id-list').then(result => {
-        let idList: number[] = [];
-        if (result) {
-          idList = JSON.parse(result);
-        }
-        let list = res.sort((a: ItemType, b: ItemType) => b.id - a.id);
-        setTotalList(list);
-        setTotalSize(list.length);
-        setMemoList(list.slice(0, pageSize));
-        dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
-        dispatch(commonSlice.actions.setIsLoading(false));
-        setRefreshing(false);
-      });
+      let list = res.sort((a: ItemType, b: ItemType) => b.id - a.id);
+      setTotalList(list);
+      setTotalSize(list.length);
+      setMemoList(list.slice(0, pageSize));
+      dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
+      dispatch(commonSlice.actions.setIsLoading(false));
+      setRefreshing(false);
     }, 300);
     return () => clearTimeout(timer);
   };
@@ -80,6 +80,7 @@ function TodoListScreen(): React.JSX.Element {
    */
   const getMemoList = () => {
     const timer = setTimeout(() => {
+      // async storage 완료 데이터 적용
       getData('id-list').then(res => {
         dispatch(commonSlice.actions.setIsLoading(true));
         let idList: number[] = [];
@@ -153,13 +154,30 @@ function TodoListScreen(): React.JSX.Element {
    * 할일 등록/수정
    */
   const submitTodo = async () => {
-    const param = {
-      content: todoValue,
-    };
-    const res = await api.createTodo(param);
-    if (res.id) {
-      getMemoListAll();
-      handleCreateInitialize();
+    if (todoValue.length > 0) {
+      let param = {
+        id: 0,
+        content: todoValue,
+      };
+      // update
+      if (isEdit) {
+        param.id = detail.id;
+        const res = await api.updateTodo(param);
+        if (res.id) {
+          getMemoListAll();
+          handleCreateInitialize();
+        }
+      }
+      // create
+      else {
+        const res = await api.createTodo(param);
+        if (res.id) {
+          getMemoListAll();
+          handleCreateInitialize();
+        }
+      }
+    } else {
+      Alert.alert('내용을 입력해 주세요.');
     }
   };
 
@@ -171,31 +189,60 @@ function TodoListScreen(): React.JSX.Element {
     setModalVisible(false);
   };
 
-  const handleTodoDelete = async () => {
+  /**
+   * 할일 수정하기
+   * @param item
+   * @param handleModalVisible
+   */
+  const handleTodoUpdate = async (
+    item: ItemType,
+    handleModalVisible: () => void,
+  ) => {
+    handleModalVisible();
+    setIsEdit(true);
+    setTodoValue(item.content);
+    setModalVisible(true);
+  };
+
+  /**
+   * 할일 삭제하기
+   * @param item
+   * @param handleModalVisible
+   */
+  const handleTodoDelete = async (
+    item: ItemType,
+    handleModalVisible: () => void,
+  ) => {
     Alert.alert('정말 삭제하시겠습니까?', '', [
       {
         text: '취소',
       },
       {
         text: '확인',
-        onPress: () => {
-          // let param = {
-          // }
+        onPress: async () => {
+          await api.deleteTodo(item);
+          handleModalVisible();
+          if (currPage === 1) {
+            getMemoListAll();
+          } else {
+            setCurrPage(1);
+          }
         },
       },
     ]);
   };
 
-  const TodoStatusProps = {
+  const todoStatusProps = {
+    handleTodoUpdate,
     handleTodoDelete,
   };
 
-  const TodoListProps = {
+  const todoListProps = {
     memoList,
     refreshing,
     onRefresh,
     onEndReached,
-    TodoStatusProps,
+    todoStatusProps,
   };
 
   const modalProps = {
@@ -204,13 +251,13 @@ function TodoListScreen(): React.JSX.Element {
     todoValue,
     handleTodoValue,
     submitTodo,
-    TodoStatusProps,
+    todoStatusProps,
   };
 
   return (
     <SafeAreaView style={styles.container}>
       {isLoading && <LoadingComponent />}
-      <TodoList {...TodoListProps} />
+      <TodoList {...todoListProps} />
       <TodoModal {...modalProps} />
     </SafeAreaView>
   );

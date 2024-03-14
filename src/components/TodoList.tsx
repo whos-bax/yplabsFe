@@ -15,13 +15,14 @@ import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/rootReducer.ts';
 import {useAppDispatch} from '../redux/store.ts';
-import TodoStatusComponent from './TodoStatusComponent.tsx';
+import TodoStatusComponent, {TodoStatusType} from './TodoStatusComponent.tsx';
 
 const TodoList = ({
   memoList,
   refreshing,
   onRefresh,
   onEndReached,
+  todoStatusProps,
 }: TodoListPropsType): React.JSX.Element => {
   const isLoading = useSelector((state: RootState) => state.common.loading);
 
@@ -32,7 +33,9 @@ const TodoList = ({
         contentContainerStyle={styles.listView}
         data={memoList}
         keyExtractor={item => `${item.id}`}
-        renderItem={({item}) => <Item {...item} />}
+        renderItem={({item}) => (
+          <Item item={item} todoStatusProps={todoStatusProps} />
+        )}
         onRefresh={onRefresh}
         refreshing={refreshing}
         onEndReached={onEndReached}
@@ -41,7 +44,7 @@ const TodoList = ({
   );
 };
 
-const Item = (item: ItemType): React.JSX.Element => {
+const Item = ({item, todoStatusProps}: TodoStatusType): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<RootStackNavigationProp>();
   const handleNavigate = () => {
@@ -53,7 +56,7 @@ const Item = (item: ItemType): React.JSX.Element => {
       <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">
         {item.content}
       </Text>
-      <TodoStatusComponent />
+      <TodoStatusComponent item={item} todoStatusProps={todoStatusProps} />
     </TouchableOpacity>
   );
 };
