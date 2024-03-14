@@ -1,9 +1,9 @@
 import React from 'react';
 import {ScrollView, StyleSheet, Switch, Text, View} from 'react-native';
-import {ItemProps} from './TodoList.tsx';
 import dayjs from 'dayjs';
+import {ItemType} from '../redux/slice/todoDetailSlice.ts';
 
-const TodoDetail = (item: ItemProps): React.JSX.Element => {
+const TodoDetail = (item: ItemType): React.JSX.Element => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.todoDetailView}>

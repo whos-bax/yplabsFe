@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   Modal,
   StyleSheet,
   Text,
-  Pressable,
   View,
   TextInput,
   TouchableOpacity,
@@ -11,12 +10,17 @@ import {
 } from 'react-native';
 import {TodoModalProps} from '../pages/TodoListScreen.tsx';
 
-const {width, height} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
-const TodoModal = ({todoValue, handleTodoListCreate}: TodoModalProps) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const handleModalClose = (e: any) => {
-    // if (e.target !== e.currentTarget) return;
+const TodoModal = ({
+  modalVisible,
+  setModalVisible,
+  todoValue,
+  handleTodoValue,
+  submitTodo,
+  isEdit,
+}: TodoModalProps) => {
+  const handleModalClose = () => {
     setModalVisible(!modalVisible);
   };
   return (
@@ -36,7 +40,7 @@ const TodoModal = ({todoValue, handleTodoListCreate}: TodoModalProps) => {
               autoFocus
               editable
               multiline
-              onChangeText={handleTodoListCreate}
+              onChangeText={handleTodoValue}
               value={todoValue}
             />
             <View style={styles.buttonGroup}>
@@ -47,16 +51,18 @@ const TodoModal = ({todoValue, handleTodoListCreate}: TodoModalProps) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.buttonActive]}
-                onPress={handleModalClose}>
+                onPress={submitTodo}>
                 <Text style={styles.buttonText}>작성</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-      <Pressable
+      <TouchableOpacity
         style={styles.fixedButton}
-        onPress={() => setModalVisible(true)}></Pressable>
+        onPress={() => setModalVisible(true)}>
+        <Text style={styles.fixedButtonText}>{isEdit ? '+' : '수정'}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -110,8 +116,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   fixedButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     position: 'absolute',
     bottom: 20,
@@ -119,7 +125,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3d67fc',
+    backgroundColor: 'white',
+    borderColor: '#3d67fc',
+    borderWidth: 1,
+  },
+  fixedButtonText: {
+    color: '#3d67fc',
+    fontSize: 20,
   },
 });
 

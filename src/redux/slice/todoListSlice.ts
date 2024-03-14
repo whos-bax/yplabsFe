@@ -1,6 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {ItemType} from './todoDetailSlice.ts';
 
-const initialState = {
+type ListType = {
+  list: ItemType[];
+};
+
+const initialState: ListType = {
   list: [],
 };
 

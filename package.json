@@ -2,7 +2,6 @@
   "name": "yplabsFe",
   "version": "0.0.1",
   "private": true,
-  "proxy": "http://3.35.194.197:8000",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
