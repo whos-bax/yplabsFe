@@ -62,14 +62,14 @@ const Item = ({
   return (
     <TouchableOpacity style={styles.item} onPress={handleNavigate}>
       <Switch
-        trackColor={{false: '#f1f3f5', true: '#3d67fc'}}
+        trackColor={{false: 'gray', true: '#3d67fc'}}
         thumbColor={'white'}
         onValueChange={(value: boolean) => {
           if (handleListToggle) {
             handleListToggle(value, item);
           }
         }}
-        value={item.is_finished}
+        value={item.is_finished || false}
         disabled={isLoading}
       />
       <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">

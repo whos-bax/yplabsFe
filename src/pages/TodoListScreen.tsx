@@ -104,12 +104,14 @@ function TodoListScreen(): React.JSX.Element {
       if (result) {
         idList = JSON.parse(result);
       }
-      let list = totalList.map((item: ItemType) => {
-        return {
-          ...item,
-          is_finished: idList.includes(item.id),
-        };
-      });
+      let list = totalList
+        .map((item: ItemType) => {
+          return {
+            ...item,
+            is_finished: idList.includes(item.id),
+          };
+        })
+        .slice(0, currPage * pageSize);
       setMemoList(list);
       dispatch(todoListSlice.actions.setList(list));
       dispatch(commonSlice.actions.setIsLoading(false));
@@ -159,6 +161,7 @@ function TodoListScreen(): React.JSX.Element {
    * @param item
    */
   const handleListToggle = (value: boolean, item: ItemType) => {
+    dispatch(commonSlice.actions.setIsLoading(true));
     let list = [...todoList];
     let idx = list.findIndex((todo: ItemType) => todo.id === item.id);
 
@@ -183,7 +186,10 @@ function TodoListScreen(): React.JSX.Element {
       if (!idList.includes(id)) {
         idList.push(id);
         storeData('id-list', JSON.stringify(idList)).then(() => {
-          getMemoList();
+          const timer = setTimeout(() => {
+            getMemoList();
+          }, 100);
+          return () => clearTimeout(timer);
         });
       }
     } else {
@@ -193,7 +199,10 @@ function TodoListScreen(): React.JSX.Element {
           // idList.splice(idx, 1);
           let arr = idList.filter((v: number, i: number) => i !== idx);
           storeData('id-list', JSON.stringify(arr)).then(() => {
-            getMemoList();
+            const timer = setTimeout(() => {
+              getMemoList();
+            }, 100);
+            return () => clearTimeout(timer);
           });
         }
       }

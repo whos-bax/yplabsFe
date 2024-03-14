@@ -3,12 +3,15 @@ import {ScrollView, StyleSheet, Switch, Text, View} from 'react-native';
 import dayjs from 'dayjs';
 import {TodoDetailPropsType} from '../pages/TodoDetailScreen.tsx';
 import TodoStatusComponent from './TodoStatusComponent.tsx';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/rootReducer.ts';
 
 const TodoDetail = ({
   item,
   handleToggleSwitch,
   todoStatusProps,
 }: TodoDetailPropsType): React.JSX.Element => {
+  const isLoading = useSelector((state: RootState) => state.common.loading);
   return (
     <ScrollView style={styles.container}>
       <View style={styles.todoDetailView}>
@@ -21,10 +24,11 @@ const TodoDetail = ({
             {item.is_finished ? '완료' : '미완료'}
           </Text>
           <Switch
-            trackColor={{false: '#f1f3f5', true: '#3d67fc'}}
+            trackColor={{false: 'gray', true: '#3d67fc'}}
             thumbColor={'white'}
             onValueChange={handleToggleSwitch}
             value={item.is_finished || false}
+            disabled={isLoading}
           />
         </View>
         <View>

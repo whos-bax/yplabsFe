@@ -42,6 +42,7 @@ const TodoModal = ({
               multiline
               onChangeText={handleTodoValue}
               value={todoValue}
+              textAlignVertical={'top'}
             />
             <View style={styles.buttonGroup}>
               <TouchableOpacity

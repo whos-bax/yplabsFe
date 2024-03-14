@@ -12,6 +12,7 @@ import todoListSlice from '../redux/slice/todoListSlice.ts';
 import {getData, storeData} from '../hook/asyncStorage.ts';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
+import commonSlice from '../redux/slice/commonSlice.ts';
 
 export type TodoDetailPropsType = {
   item: ItemType;
@@ -97,6 +98,7 @@ const TodoDetailScreen = (): React.JSX.Element => {
    * @param value
    */
   const handleToggleSwitch = (value: boolean) => {
+    dispatch(commonSlice.actions.setIsLoading(true));
     let item = {...detail};
     let list = [...todoList];
     let idx = list.findIndex((todo: ItemType) => todo.id === detail.id);
@@ -136,6 +138,7 @@ const TodoDetailScreen = (): React.JSX.Element => {
         }
       }
     });
+    dispatch(commonSlice.actions.setIsLoading(false));
   };
 
   /**
@@ -194,6 +197,7 @@ const TodoDetailScreen = (): React.JSX.Element => {
     todoValue,
     handleTodoValue,
     submitTodo,
+    isEdit: true,
   };
   return (
     <SafeAreaView style={styles.container}>
