@@ -1,25 +1,28 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   FlatList,
+  Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {MemoProps} from '../pages/TodoListScreen.tsx';
+import {TodoListPropsType} from '../pages/TodoListScreen.tsx';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
 import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/rootReducer.ts';
 import {useAppDispatch} from '../redux/store.ts';
+import TodoStatusComponent from './TodoStatusComponent.tsx';
 
 const TodoList = ({
   memoList,
   refreshing,
   onRefresh,
   onEndReached,
-}: MemoProps): React.JSX.Element => {
+}: TodoListPropsType): React.JSX.Element => {
   const isLoading = useSelector((state: RootState) => state.common.loading);
 
   return (
@@ -48,8 +51,9 @@ const Item = (item: ItemType): React.JSX.Element => {
   return (
     <TouchableOpacity style={styles.item} onPress={handleNavigate}>
       <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">
-        {item.content.replaceAll('\n', '')}
+        {item.content}
       </Text>
+      <TodoStatusComponent />
     </TouchableOpacity>
   );
 };

@@ -2,7 +2,8 @@ import axios from 'axios';
 const baseUrl = `http://3.35.194.197:8000`;
 
 export type TodoType = {
-  content: string;
+  id?: number;
+  content?: string;
 };
 
 async function getTodoAll() {
@@ -19,6 +20,18 @@ async function getTodoAll() {
 async function createTodo(param: TodoType) {
   try {
     const response = await axios.post(`${baseUrl}/todo/`, param);
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteTodo(param: TodoType) {
+  try {
+    const response = await axios.delete(`${baseUrl}/todo/${param.id}`);
+    console.log(response, response.status);
     if (response.status === 201) {
       return response.data;
     }

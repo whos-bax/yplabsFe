@@ -1,11 +1,11 @@
 import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {Alert, SafeAreaView, StyleSheet} from 'react-native';
 
 import TodoList from '../components/TodoList';
 import TodoModal from './../components/TodoModal';
 import {useAppDispatch} from '../redux/store.ts';
-import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
+import {ItemType} from '../redux/slice/todoDetailSlice.ts';
 import commonSlice from '../redux/slice/commonSlice.ts';
 import LoadingComponent from '../components/LoadingComponent.tsx';
 import {useSelector} from 'react-redux';
@@ -14,14 +14,14 @@ import todoListSlice from '../redux/slice/todoListSlice.ts';
 import api from '../api/apiService.ts';
 import {useIsFocused} from '@react-navigation/native';
 
-export type MemoProps = {
+export type TodoListPropsType = {
   memoList: ItemType[];
   refreshing: boolean;
   onRefresh: () => void;
   onEndReached: () => void;
 };
 
-export type TodoModalProps = {
+export type TodoModalPropsType = {
   modalVisible: boolean;
   setModalVisible: (show: boolean) => void;
   todoValue: string;
@@ -56,11 +56,10 @@ function TodoListScreen(): React.JSX.Element {
     const res = await api.getTodoAll();
     const timer = setTimeout(() => {
       let list = res.sort((a: ItemType, b: ItemType) => b.id - a.id);
-      console.log(list[0], list[1]);
-      setTotalList(res);
-      setTotalSize(res.length);
-      setMemoList(res.slice(0, pageSize));
-      dispatch(todoListSlice.actions.setList(res.slice(0, pageSize)));
+      setTotalList(list);
+      setTotalSize(list.length);
+      setMemoList(list.slice(0, pageSize));
+      dispatch(todoListSlice.actions.setList(list.slice(0, pageSize)));
       dispatch(commonSlice.actions.setIsLoading(false));
       setRefreshing(false);
     }, 300);
@@ -150,11 +149,31 @@ function TodoListScreen(): React.JSX.Element {
     setModalVisible(false);
   };
 
+  const handleTodoDelete = async () => {
+    Alert.alert('정말 삭제하시겠습니까?', '', [
+      {
+        text: '취소',
+      },
+      {
+        text: '확인',
+        onPress: () => {
+          // let param = {
+          // }
+        },
+      },
+    ]);
+  };
+
+  const TodoStatusProps = {
+    handleTodoDelete,
+  };
+
   const TodoListProps = {
     memoList,
     refreshing,
     onRefresh,
     onEndReached,
+    TodoStatusProps,
   };
 
   const modalProps = {
@@ -163,6 +182,7 @@ function TodoListScreen(): React.JSX.Element {
     todoValue,
     handleTodoValue,
     submitTodo,
+    TodoStatusProps,
   };
 
   return (

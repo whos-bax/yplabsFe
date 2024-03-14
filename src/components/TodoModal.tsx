@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import {TodoModalProps} from '../pages/TodoListScreen.tsx';
+import {TodoModalPropsType} from '../pages/TodoListScreen.tsx';
 
 const {height} = Dimensions.get('window');
 
@@ -19,7 +19,7 @@ const TodoModal = ({
   handleTodoValue,
   submitTodo,
   isEdit,
-}: TodoModalProps) => {
+}: TodoModalPropsType) => {
   const handleModalClose = () => {
     setModalVisible(!modalVisible);
   };
@@ -58,11 +58,13 @@ const TodoModal = ({
           </View>
         </View>
       </Modal>
-      <TouchableOpacity
-        style={styles.fixedButton}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.fixedButtonText}>{isEdit ? '+' : '수정'}</Text>
-      </TouchableOpacity>
+      {!isEdit && (
+        <TouchableOpacity
+          style={styles.fixedButton}
+          onPress={() => setModalVisible(true)}>
+          <Text style={styles.fixedButtonText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
