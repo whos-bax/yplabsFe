@@ -10,7 +10,7 @@ const initialState = {
 /**
  * TemplateSlice에서 관리할 상태를 지정합니다.
  */
-export const TodoSlice = createSlice({
+export const todoSlice = createSlice({
   name: 'todoDetail',
   initialState,
   reducers: {
@@ -25,6 +25,6 @@ export const TodoSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {setTodoDetail} = TodoSlice.actions;
+// export const {setTodoDetail} = todoSlice.actions;
 
-export default TodoSlice.reducer;
+export default todoSlice;

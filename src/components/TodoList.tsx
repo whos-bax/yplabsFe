@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -9,8 +9,8 @@ import {
 import {MemoProps} from '../pages/TodoListScreen.tsx';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
-import {useDispatch} from 'react-redux';
-import {setTodoDetail} from '../redux/slice/TodoSlice.ts';
+import {useAppDispatch} from '../redux/store.ts';
+import todoSlice from '../redux/slice/todo.ts';
 
 export type ItemProps = {
   id: number | null;
@@ -20,6 +20,13 @@ export type ItemProps = {
 };
 
 const TodoList = ({memoList}: MemoProps): React.JSX.Element => {
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Todo-List</Text>
@@ -27,16 +34,18 @@ const TodoList = ({memoList}: MemoProps): React.JSX.Element => {
         data={memoList}
         keyExtractor={item => `${item.id}`}
         renderItem={({item}) => <Item {...item} />}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
       />
     </SafeAreaView>
   );
 };
 
 const Item = (item: ItemProps): React.JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigation = useNavigation<RootStackNavigationProp>();
   const handleNavigate = () => {
-    dispatch(setTodoDetail(item));
+    dispatch(todoSlice.actions.setTodoDetail(item));
     navigation.navigate('Detail');
   };
   return (
@@ -64,6 +73,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
+    borderRadius: 8,
   },
   content: {
     fontSize: 16,

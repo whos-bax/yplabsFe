@@ -1,11 +1,10 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
 import TodoDetail from '../components/TodoDetail.tsx';
-import {RootState} from '../redux/RootReducer.ts';
+import {RootState} from '../redux/rootReducer.ts';
 
 const TodoDetailScreen = (): React.JSX.Element => {
-  const todo = useSelector((state: RootState) => state.todos);
-  console.log('=====', todo);
-  return <TodoDetail {...todo} />;
+  const todoProps = useSelector((state: RootState) => state.todo);
+  return <TodoDetail {...todoProps} />;
 };
 export default TodoDetailScreen;
