@@ -8,13 +8,15 @@ import {
 } from 'react-native';
 import {MemoProps} from '../pages/TodoListScreen.tsx';
 import {useNavigation} from '@react-navigation/native';
-import {RootStackNavigationProp} from '../../App.tsx';
-// import {useNavigationContainerRef} from '@react-navigation/native';
-// import {navigate} from '../../App.tsx';
+import {RootStackNavigationProp} from '../RootNavigation.tsx';
+import {useDispatch} from 'react-redux';
+import {setTodoDetail} from '../redux/slice/TodoSlice.ts';
 
-type ItemProps = {
+export type ItemProps = {
+  id: number | null;
   content: string;
   create_at: string;
+  update_at: string;
 };
 
 const TodoList = ({memoList}: MemoProps): React.JSX.Element => {
@@ -30,15 +32,17 @@ const TodoList = ({memoList}: MemoProps): React.JSX.Element => {
   );
 };
 
-const Item = ({content}: ItemProps): React.JSX.Element => {
+const Item = (item: ItemProps): React.JSX.Element => {
+  const dispatch = useDispatch();
   const navigation = useNavigation<RootStackNavigationProp>();
   const handleNavigate = () => {
+    dispatch(setTodoDetail(item));
     navigation.navigate('Detail');
   };
   return (
     <TouchableOpacity style={styles.item} onPress={handleNavigate}>
       <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">
-        {content.replaceAll('\n', '')}
+        {item.content.replaceAll('\n', '')}
       </Text>
     </TouchableOpacity>
   );

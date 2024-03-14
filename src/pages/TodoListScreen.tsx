@@ -3,9 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 
 import TodoList from '../components/TodoList';
-import api from './../api/apiService';
 import TodoModal from './../components/TodoModal';
-import {useNavigationContainerRef} from '@react-navigation/native';
 
 export type MemoType = {
   id: number;

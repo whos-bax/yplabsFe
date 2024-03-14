@@ -1,21 +1,11 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSelector} from 'react-redux';
+import TodoDetail from '../components/TodoDetail.tsx';
+import {RootState} from '../redux/RootReducer.ts';
 
 const TodoDetailScreen = (): React.JSX.Element => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text>hi</Text>
-    </SafeAreaView>
-  );
+  const todo = useSelector((state: RootState) => state.todos);
+  console.log('=====', todo);
+  return <TodoDetail {...todo} />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: '100%',
-    backgroundColor: 'white',
-  },
-});
-
 export default TodoDetailScreen;
