@@ -23,6 +23,8 @@
       - 목록의 View를 보여주는 컴포넌트로, `FlatList`를 통해서 리스트를 나열했으며, 내부 `Item` 컴포넌트로 각 아이템의 View를 구현했습니다.
       - 아이템별 수정, 삭제는 `TodoStatusComponent`를 통해 공통 컴포넌트로 구분하여 적용했습니다.
       - `navigation` 함수를 통해 할 일 클릭 시 해당 상세 페이지로 이동할 수 있도록 했습니다.
+      - `onRefresh`,`onEndReached` 함수를 통해 상단 새로고침, 하단 무한 스크롤 구현했습니다.
+      - 새로고침과 무한 스크롤은 `currPage`라는 변수를 통해 해당 변수가 +1 될 때 리스트를 slice 할 수 있도록 useEffect 내 dependency로 처리 하였으며, 중복 호출을 방지하고자 loading 함수로 구분하여 적용해습니다.
     - `TodoModal`
       - 할 일을 추가하는 모달로 ListScreen에서는 작성/수정이 가능할 수 있도록 `isEdit` flag를 통해 구분하였습니다.
 - `TodoDetailScreen`
@@ -44,4 +46,4 @@
 - `api`
   - `axios`를 적용하여 `get`, `post`, `delete`, `patch` 함수를 반영했습니다.
   - 일반적으로 `baseUrl`의 경우 `.env`에 적용해야 하나, 로컬 프로젝트임을 감안하여 상단에 `baseUrl` 를 지정함으로써 사용했습니다.
-  - 
+  
