@@ -10,10 +10,10 @@ import {
 import {TodoListPropsType} from '../pages/TodoListScreen.tsx';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
-import todoDetailSlice from '../redux/slice/todoDetailSlice.ts';
+import todoDetailSlice from '../redux/store/slice/todoDetailSlice.ts';
 import {useSelector} from 'react-redux';
-import {RootState} from '../redux/rootReducer.ts';
-import {useAppDispatch} from '../redux/store.ts';
+import {RootState} from '../redux/store/rootReducer.ts';
+import {useAppDispatch} from '../redux/store';
 import TodoStatusComponent, {TodoStatusType} from './TodoStatusComponent.tsx';
 
 const TodoList = ({

@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import {TodoDetailPropsType} from '../pages/TodoDetailScreen.tsx';
 import TodoStatusComponent from './TodoStatusComponent.tsx';
 import {useSelector} from 'react-redux';
-import {RootState} from '../redux/rootReducer.ts';
+import {RootState} from '../redux/store/rootReducer.ts';
 
 const TodoDetail = ({
   item,

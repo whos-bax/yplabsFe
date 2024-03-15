@@ -4,13 +4,15 @@ import {Alert, SafeAreaView, StyleSheet} from 'react-native';
 
 import TodoList from '../components/TodoList';
 import TodoModal from './../components/TodoModal';
-import {useAppDispatch} from '../redux/store.ts';
-import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
-import commonSlice from '../redux/slice/commonSlice.ts';
+import {useAppDispatch} from '../redux/store';
+import todoDetailSlice, {
+  ItemType,
+} from '../redux/store/slice/todoDetailSlice.ts';
+import commonSlice from '../redux/store/slice/commonSlice.ts';
 import LoadingComponent from '../components/LoadingComponent.tsx';
 import {useSelector} from 'react-redux';
-import {RootState} from '../redux/rootReducer.ts';
-import todoListSlice from '../redux/slice/todoListSlice.ts';
+import {RootState} from '../redux/store/rootReducer.ts';
+import todoListSlice from '../redux/store/slice/todoListSlice.ts';
 import api from '../api/apiService.ts';
 import {useIsFocused} from '@react-navigation/native';
 import {getData, storeData} from '../hook/asyncStorage.ts';

@@ -7,10 +7,12 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
-import {useAppDispatch} from '../redux/store.ts';
+import todoDetailSlice, {
+  ItemType,
+} from '../redux/store/slice/todoDetailSlice.ts';
+import {useAppDispatch} from '../redux/store';
 import {useSelector} from 'react-redux';
-import {RootState} from '../redux/rootReducer.ts';
+import {RootState} from '../redux/store/rootReducer.ts';
 
 export type TodoStatusType = {
   item: ItemType;

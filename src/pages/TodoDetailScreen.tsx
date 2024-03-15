@@ -1,18 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import TodoDetail from '../components/TodoDetail.tsx';
-import {RootState} from '../redux/rootReducer.ts';
+import {RootState} from '../redux/store/rootReducer.ts';
 import {Alert, SafeAreaView, StyleSheet} from 'react-native';
 import LoadingComponent from '../components/LoadingComponent.tsx';
 import TodoModal from '../components/TodoModal.tsx';
 import api from '../api/apiService.ts';
-import todoDetailSlice, {ItemType} from '../redux/slice/todoDetailSlice.ts';
-import {useAppDispatch} from '../redux/store.ts';
-import todoListSlice from '../redux/slice/todoListSlice.ts';
+import todoDetailSlice, {
+  ItemType,
+} from '../redux/store/slice/todoDetailSlice.ts';
+import {useAppDispatch} from '../redux/store';
+import todoListSlice from '../redux/store/slice/todoListSlice.ts';
 import {getData, storeData} from '../hook/asyncStorage.ts';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../RootNavigation.tsx';
-import commonSlice from '../redux/slice/commonSlice.ts';
+import commonSlice from '../redux/store/slice/commonSlice.ts';
 
 export type TodoDetailPropsType = {
   item: ItemType;

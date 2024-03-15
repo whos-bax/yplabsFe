@@ -9,8 +9,8 @@ const initialState: ListType = {
   list: [],
 };
 
-const todoDetailSlice = createSlice({
-  name: 'todoList',
+const todoSagaSlice = createSlice({
+  name: 'todoSagaList',
   initialState,
   reducers: {
     setList(state, action) {
@@ -19,4 +19,4 @@ const todoDetailSlice = createSlice({
   },
 });
 
-export default todoDetailSlice;
+export default todoSagaSlice;
