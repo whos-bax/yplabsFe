@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Alert} from 'react-native';
-const baseUrl = `http://3.35.194.197:8000`;
+const baseUrl = 'http://3.35.194.197:8000';
 
 export type TodoType = {
   id?: number;
