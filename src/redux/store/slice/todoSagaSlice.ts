@@ -1,20 +1,33 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {ItemType} from './todoDetailSlice.ts';
+import todoListSlice from './todoListSlice.ts';
 
-type ListType = {
+interface initialType {
   list: ItemType[];
-};
+  loading: boolean;
+  error: string;
+}
 
-const initialState: ListType = {
+const initialState: initialType = {
   list: [],
+  loading: false,
+  error: '',
 };
 
 const todoSagaSlice = createSlice({
-  name: 'todoSagaList',
+  name: 'todoSagaSlice',
   initialState,
   reducers: {
-    setList(state, action) {
+    getTodoSaga(state) {
+      state.loading = true;
+    },
+    setTodoSaga(state, action) {
       state.list = action.payload;
+      state.loading = false;
+    },
+    failedGetTodo(state, action) {
+      state.error = action.payload;
+      state.loading = false;
     },
   },
 });

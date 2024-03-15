@@ -93,17 +93,13 @@ const api = {
 
 export default api;
 
-export interface TodoAllType {
-  id: number;
-  content: string;
-  create_at: string;
-  update_at: string;
-}
-export const getTodoAllSaga = (): Promise<TodoAllType> => {
-  return fetch(`${baseUrl}/todo/`).then(res => {
-    if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-    return res.json() as Promise<TodoAllType>;
-  });
+export const getTodoAllSaga = () => {
+  return axios
+    .get(`${baseUrl}/todo/`)
+    .then(res => {
+      if (res.status === 200) {
+        return res.data;
+      }
+    })
+    .catch(e => e);
 };

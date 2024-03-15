@@ -16,6 +16,7 @@ import todoListSlice from '../redux/store/slice/todoListSlice.ts';
 import api from '../api/apiService.ts';
 import {useIsFocused} from '@react-navigation/native';
 import {getData, storeData} from '../hook/asyncStorage.ts';
+import todoSagaSlice from '../redux/store/slice/todoSagaSlice.ts';
 
 export type TodoListPropsType = {
   memoList: ItemType[];
@@ -39,12 +40,14 @@ export type TodoModalPropsType = {
 };
 
 function TodoListScreen(): React.JSX.Element {
+  // const usedispatch = useDispatch(); // saga를 이용한
   const dispatch = useAppDispatch();
   const isFocused = useIsFocused();
   const isLoading = useSelector((state: RootState) => state.common.loading);
 
   const todoList = useSelector((state: RootState) => state.todoList.list);
   const detail = useSelector((state: RootState) => state.todoDetail);
+  const todoSagaList = useSelector((state: RootState) => state.todoSaga);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -69,6 +72,7 @@ function TodoListScreen(): React.JSX.Element {
     const res = await api.getTodoAll();
     // async storage 완료 데이터 적용
     getData('id-list').then(result => {
+      // console.log('todoSagaList');
       let idList: number[] = [];
       if (result) {
         idList = JSON.parse(result);
@@ -147,6 +151,7 @@ function TodoListScreen(): React.JSX.Element {
    * 데이터 fetch
    */
   useEffect(() => {
+    dispatch(todoSagaSlice.actions.getTodoSaga()); // saga를 이용한 데이터 fetch
     getMemoListAll();
   }, [isFocused]);
 

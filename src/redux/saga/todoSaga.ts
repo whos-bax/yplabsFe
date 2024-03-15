@@ -1,18 +1,12 @@
-import {takeEvery, call, put} from 'redux-saga/effects';
+import {call, put} from 'redux-saga/effects';
 import {getTodoAllSaga} from '../../api/apiService.ts';
+import todoSagaSlice from '../store/slice/todoSagaSlice.ts';
 
-function* fetch() {
+export function* handleGetTodoSaga() {
   try {
-    const employees = yield call(getTodoAllSaga);
-    yield put({
-      type: 'EMPLOYEES_FETCH_SUCCESS',
-      payload: {employees: employees.data},
-    });
-  } catch (e) {
-    yield put({type: 'EMPLOYEES_FETCH_FAILURE', payload: {message: e.message}});
+    const res: string = yield call(getTodoAllSaga);
+    yield put(todoSagaSlice.actions.setTodoSaga(res));
+  } catch (error) {
+    yield put(todoSagaSlice.actions.failedGetTodo(error));
   }
-}
-
-export default function* sagas() {
-  yield takeEvery('EMPLOYEES_FETCH_REQUEST', fetch);
 }
