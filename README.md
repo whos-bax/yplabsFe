@@ -50,6 +50,16 @@
 
 + redux-saga
   + 리덕스 사가는 동기로 작동하는 redux와 비동기로 작동하는 api 연동 사이에 사이드 이펙트를 적용하는 미들웨어로 알고 있습니다.
-  + 리덕스 사가를 적용하기 위해서 리덕스 내 미들웨어로 적용해야하나, 숙련도가 부족하여 `main` 브랜치에는 반영하지 않았습니다. 해당 테스트 로직은 `redux-saga` 브랜치로 따로 적용하였습니다. 
+  + 리덕스 사가를 적용하기 위해서 리덕스 내 미들웨어로 적용해야하나, 숙련도가 부족하여 `main` 브랜치에는 반영하지 않았습니다. saga를 이용한 data fetch 로직은 `redux-saga` 브랜치로 따로 적용하였습니다. (`src/pages/TodolistScreen.tsx`) 
   + api 호출 및 비동기 사이드 이펙트 처리를 위해 async/await 처리로 적용했습니다.
-  + 리덕스 사가를 적용하지 못하면서 테스트 함수인 Jest 또한 반영하지 못했습니다.
+  + 리덕스 사가 적용 관련하여서 todoList get 부분만 적용하였으며, redux-saga를 통해 적용 시 전체 로직 수정이 필요해보입니다.
+    + 현재 로직
+      + async/await를 통해 데이터 fetch를 진행하고 해당 리턴값을 받기 전까지 loading state는 true 입니다.
+      + 성공 status가 떨어지기 전까지 dispatch는 진행하지 않으며, 성공 값을 반환 후 해당 state를 dispatch 진행합니다.
+    + 수정이 필요한 로직
+      + redux-saga를 통해 todoSagaList를 dispatch하고, 그 과정에서 성공 여부를 판단하여 로직을 처리합니다.
+      + 성공할 경우, todoSagaList는 totalList와 동일하며 totalList를 pageSize * currPage로 계산하여 slice를 적용합니다.
+
+고생많으셨습니다. 감사합니다.
+
+박상호 드림.
